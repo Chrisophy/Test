@@ -8,9 +8,8 @@
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 20px; background: #f4f4f4; color: #333; text-align: center; margin-bottom: 80px; }
         .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: left; }
         .logo-container { margin-bottom: 0px; }
-h2 { margin-top: 0px; font-weight: 800; }
         .logo-img { max-width: 100%; height: auto; max-height: 80px; }
-        h2 { color: #1a237e; font-size: 28px; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid #1a237e; display: inline-block; padding-bottom: 5px; margin-bottom: 20px; }
+        h2 { color: #1a237e; font-size: 28px; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid #1a237e; display: inline-block; padding-bottom: 5px; margin-bottom: 20px; margin-top: 0px; }
         
         input, textarea, button, select { padding: 12px; margin: 8px 0; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; font-size: 16px; }
         button { background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
@@ -19,7 +18,6 @@ h2 { margin-top: 0px; font-weight: 800; }
         .delete-btn { background: #ff9800; margin-top: 10px; flex: 1; }
         .logout-btn { background: #dc3545; padding: 8px; font-size: 14px; width: auto; }
         .hidden { display: none !important; }
-        .warning-box { background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; margin-bottom: 15px; }
         .item-img { width: 100%; border-radius: 5px; margin: 10px 0; max-height: 300px; object-fit: cover; }
         
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white; display: inline-block; margin-bottom: 5px; }
@@ -34,6 +32,8 @@ h2 { margin-top: 0px; font-weight: 800; }
         .footer-links { margin-top: 10px; }
         .footer-links a { color: #007bff; text-decoration: none; margin: 0 10px; cursor: pointer; }
         .legal-notice { font-size: 11px; color: #888; font-style: italic; margin-bottom: 15px; }
+        
+        .item-footer { font-size: 13px; color: #666; border-top: 1px solid #eee; padding-top: 8px; margin-top: 10px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -122,10 +122,16 @@ h2 { margin-top: 0px; font-weight: 800; }
         // --- DEMO DATEN ---
         let currentUserName = "";
         let demoArtikel = [
-            { id: '1', typ: 'biete', title: 'Fahrrad 26 Zoll', standort: 'Mitte', beschreibung: 'Gebrauchtes Mountainbike zu verschenken.', user: 'Max', created: new Date(), foto: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=300' },
-            { id: '2', typ: 'suche', title: 'Suche Hilfe beim Einkauf', standort: 'Nord', beschreibung: 'Wer kann mir 1x die Woche helfen?', user: 'Anna', created: new Date(), foto: null },
-            { id: '3', typ: 'biete', title: 'Kaffeemaschine', standort: 'West', beschreibung: 'Voll funktionsfähig, wird nicht mehr gebraucht.', user: 'Demo User', created: new Date(), foto: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=300' }
+            { id: '1', typ: 'biete', title: 'Fahrrad 26 Zoll', standort: 'Mitte', beschreibung: 'Gebrauchtes Mountainbike zu verschenken.', user: 'Max', created: '12.01.2026', foto: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=300' },
+            { id: '2', typ: 'suche', title: 'Suche Hilfe beim Einkauf', standort: 'Nord', beschreibung: 'Wer kann mir 1x die Woche helfen?', user: 'Anna', created: '10.01.2026', foto: null },
+            { id: '3', typ: 'biete', title: 'Kaffeemaschine', standort: 'West', beschreibung: 'Voll funktionsfähig, wird nicht mehr gebraucht.', user: 'Demo User', created: '14.01.2026', foto: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=300' }
         ];
+
+        // Hilfsfunktion für Datum
+        function getHeuteDatum() {
+            const d = new Date();
+            return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
 
         // --- AUTH LOGIK ---
         function toggleAuth(mode) {
@@ -152,18 +158,21 @@ h2 { margin-top: 0px; font-weight: 800; }
             const liste = document.getElementById('artikel-liste');
             liste.innerHTML = demoArtikel.map(item => `
                 <div class="card" style="border-top: 4px solid ${item.typ === 'suche' ? '#ff9800' : '#28a745'}">
-                    <span class="badge ${item.typ === 'suche' ? 'badge-suche' : 'badge-biete'}">${item.typ.toUpperCase()}</span>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <span class="badge ${item.typ === 'suche' ? 'badge-suche' : 'badge-biete'}">${item.typ.toUpperCase()}</span>
+                        <span style="font-size: 11px; color: #999;">${item.created}</span>
+                    </div>
                     ${item.foto ? `<img src="${item.foto}" class="item-img">` : ''}
-                    <h4>${item.title}</h4>
-                    <p>${item.beschreibung}</p>
-                    <div style="font-size: 13px; color: #666; border-top: 1px solid #eee; padding-top: 8px; margin-top: 10px;">
-                        Von: <b>${item.user}</b> | 📍 Ort: <b>${item.standort}</b>
+                    <h4 style="margin: 10px 0 5px 0;">${item.title}</h4>
+                    <p style="margin-bottom: 15px;">${item.beschreibung}</p>
+                    <div class="item-footer">
+                        Von: <b>${item.user}</b> <br>📍 Ort: <b>${item.standort}</b>
                     </div>
                     <button class="contact-btn-inner" onclick="alert('Kontaktanfrage an ${item.user} gesendet!')">📧 Kontaktieren</button>
                     ${item.user === currentUserName ? `
                         <div style="display:flex; gap:10px">
-                            <button class="edit-btn" onclick='openForm(${JSON.stringify(item)})'>✏️</button>
-                            <button class="delete-btn" onclick="loescheArtikel('${item.id}')">🗑️</button>
+                            <button class="edit-btn" onclick='openForm(${JSON.stringify(item)})'>✏️ Bearbeiten</button>
+                            <button class="delete-btn" onclick="loescheArtikel('${item.id}')">🗑️ Löschen</button>
                         </div>` : ''}
                 </div>
             `).join('');
@@ -173,6 +182,11 @@ h2 { margin-top: 0px; font-weight: 800; }
             const typ = document.getElementById('typ').value;
             const fileInput = document.getElementById('foto');
             const editId = document.getElementById('edit-id').value;
+            const title = document.getElementById('title').value;
+            const standort = document.getElementById('standort').value;
+            const beschreibung = document.getElementById('beschreibung').value;
+
+            if(!title || !standort) return alert("Bitte Titel und Standort angeben.");
 
             if (typ === 'biete' && !editId && !fileInput.files[0]) {
                 return alert("Bitte ein Foto hochladen.");
@@ -190,19 +204,22 @@ h2 { margin-top: 0px; font-weight: 800; }
             if (editId) {
                 const idx = demoArtikel.findIndex(a => a.id === editId);
                 demoArtikel[idx] = { ...demoArtikel[idx], 
-                    title: document.getElementById('title').value,
-                    standort: document.getElementById('standort').value,
-                    beschreibung: document.getElementById('beschreibung').value,
+                    title: title,
+                    standort: standort,
+                    beschreibung: beschreibung,
                     typ: typ,
                     foto: finalFoto || demoArtikel[idx].foto
                 };
             } else {
                 demoArtikel.unshift({
                     id: Date.now().toString(),
-                    typ, title: document.getElementById('title').value,
-                    standort: document.getElementById('standort').value,
-                    beschreibung: document.getElementById('beschreibung').value,
-                    user: currentUserName, foto: finalFoto
+                    typ: typ, 
+                    title: title,
+                    standort: standort,
+                    beschreibung: beschreibung,
+                    user: currentUserName, 
+                    foto: finalFoto,
+                    created: getHeuteDatum()
                 });
             }
             closeForm();
@@ -210,19 +227,23 @@ h2 { margin-top: 0px; font-weight: 800; }
         }
 
         function loescheArtikel(id) {
-            demoArtikel = demoArtikel.filter(a => a.id !== id);
-            ladeArtikel();
+            if(confirm("Eintrag wirklich löschen?")) {
+                demoArtikel = demoArtikel.filter(a => a.id !== id);
+                ladeArtikel();
+            }
         }
 
         function openForm(editData = null) {
             document.getElementById('modal-container').classList.remove('hidden');
             if (editData) {
+                document.getElementById('form-title').innerText = "Eintrag bearbeiten";
                 document.getElementById('edit-id').value = editData.id;
                 document.getElementById('title').value = editData.title;
                 document.getElementById('standort').value = editData.standort;
                 document.getElementById('beschreibung').value = editData.beschreibung;
                 document.getElementById('typ').value = editData.typ;
             } else {
+                document.getElementById('form-title').innerText = "Neuer Eintrag";
                 document.getElementById('edit-id').value = "";
                 document.getElementById('title').value = "";
                 document.getElementById('standort').value = "";
@@ -234,29 +255,9 @@ h2 { margin-top: 0px; font-weight: 800; }
 
         // --- LEGAL TEXTS ---
         const legalTexts = {
-            impressum: `<h3>Impressum</h3>
-                        <p><b>Wegweiser Betreuungsdienst</b><br>
-                        Detlev Schürmann<br>
-                        Kurfürstenstr. 8<br>
-                        47906 Kempen</p>
-                        <p><b>Kontakt:</b><br>
-                        E-Mail: info@wegweiser-betreuungsdienst.de<br>
-                        Telefon: +49 2152 99454-0<br>
-                        Telfax: +49 2152 99454-19</p>`,
-    
-            datenschutz: `<h3>Datenschutz</h3>
-                          <p>Diese Plattform dient dem Austausch von Gegenständen unter Nachbarn. Wir erheben und speichern nur die Daten, die zur Nutzung notwendig sind (Nutzername, E-Mail-Adresse und die von Ihnen erstellten Anzeigen). </p>
-                          <p>Ihre E-Mail-Adresse wird anderen registrierten Nutzern nur zum Zweck der Kontaktaufnahme angezeigt. Wir geben keine Daten an unbefugte Dritte weiter.</p>`,
-    
-            disclaimer: `<h3>Haftungsausschluss (Disclaimer)</h3>
-                         <p><b>1. Inhalt des Onlineangebotes</b><br>
-                         Der Wegweiser Betreuungsdienst stellt lediglich die technische Plattform für den privaten Austausch zur Verfügung. Wir treten nicht als Vertragspartner der Tauschgeschäfte auf.</p>
-                 
-                         <p><b>2. Haftungsausschluss für Tauschgegenstände</b><br>
-                 Der Tausch erfolgt rein privat und unter Ausschluss jeglicher Gewährleistung oder Garantie. Wir prüfen die angebotenen Gegenstände nicht auf Zustand, Funktion oder Sicherheit. Die Nutzung der getauschten Gegenstände erfolgt auf eigene Gefahr.</p>
-                 
-                         <p><b>3. Haftungsbegrenzung</b><br>
-                         Die Haftung des Betreibers für Sach- oder Vermögensschäden, die durch die Nutzung der Plattform oder durch getauschte Gegenstände entstehen, ist ausgeschlossen, sofern kein vorsätzliches oder grob fahrlässiges Handeln vorliegt. Haftung für Schäden aus der Verletzung des Lebens, des Körpers oder der Gesundheit bleibt unberührt.</p>`
+            impressum: `<h3>Impressum</h3><p><b>Wegweiser Betreuungsdienst</b><br>Detlev Schürmann<br>Kurfürstenstr. 8<br>47906 Kempen</p><p><b>Kontakt:</b><br>E-Mail: info@wegweiser-betreuungsdienst.de<br>Telefon: +49 2152 99454-0</p>`,
+            datenschutz: `<h3>Datenschutz</h3><p>Wir erheben nur notwendige Daten für den Tausch (Nutzername, E-Mail, Anzeigeninhalte). Daten werden nicht an Dritte weitergegeben.</p>`,
+            disclaimer: `<h3>Haftungsausschluss</h3><p>Privater Tausch ohne Gewährleistung. Der Betreiber haftet nicht für Mängel an getauschten Gegenständen.</p>`
         };
 
         function showLegal(type) {
