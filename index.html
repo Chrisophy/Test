@@ -234,9 +234,29 @@ h2 { margin-top: 0px; font-weight: 800; }
 
         // --- LEGAL TEXTS ---
         const legalTexts = {
-            impressum: "<h3>Impressum</h3><p>Wegweiser Betreuungsdienst<br>Musterstraße 1<br>12345 Stadt</p>",
-            datenschutz: "<h3>Datenschutz</h3><p>Wir nutzen Cookies nur für die Demo-Sitzung. Es werden keine Daten an Dritte weitergegeben.</p>",
-            disclaimer: "<h3>Haftungsausschluss</h3><p>Der Tausch erfolgt auf eigene Gefahr. Wir prüfen keine Gegenstände.</p>"
+            impressum: `<h3>Impressum</h3>
+                        <p><b>Wegweiser Betreuungsdienst</b><br>
+                        Detlev Schürmann<br>
+                        Kurfürstenstr. 8<br>
+                        47906 Kempen</p>
+                        <p><b>Kontakt:</b><br>
+                        E-Mail: info@wegweiser-betreuungsdienst.de<br>
+                        Telefon: +49 2152 99454-0<br>
+                        Telfax: +49 2152 99454-19</p>`,
+    
+            datenschutz: `<h3>Datenschutz</h3>
+                          <p>Diese Plattform dient dem Austausch von Gegenständen unter Nachbarn. Wir erheben und speichern nur die Daten, die zur Nutzung notwendig sind (Nutzername, E-Mail-Adresse und die von Ihnen erstellten Anzeigen). </p>
+                          <p>Ihre E-Mail-Adresse wird anderen registrierten Nutzern nur zum Zweck der Kontaktaufnahme angezeigt. Wir geben keine Daten an unbefugte Dritte weiter.</p>`,
+    
+            disclaimer: `<h3>Haftungsausschluss (Disclaimer)</h3>
+                         <p><b>1. Inhalt des Onlineangebotes</b><br>
+                         Der Wegweiser Betreuungsdienst stellt lediglich die technische Plattform für den privaten Austausch zur Verfügung. Wir treten nicht als Vertragspartner der Tauschgeschäfte auf.</p>
+                 
+                         <p><b>2. Haftungsausschluss für Tauschgegenstände</b><br>
+                 Der Tausch erfolgt rein privat und unter Ausschluss jeglicher Gewährleistung oder Garantie. Wir prüfen die angebotenen Gegenstände nicht auf Zustand, Funktion oder Sicherheit. Die Nutzung der getauschten Gegenstände erfolgt auf eigene Gefahr.</p>
+                 
+                         <p><b>3. Haftungsbegrenzung</b><br>
+                         Die Haftung des Betreibers für Sach- oder Vermögensschäden, die durch die Nutzung der Plattform oder durch getauschte Gegenstände entstehen, ist ausgeschlossen, sofern kein vorsätzliches oder grob fahrlässiges Handeln vorliegt. Haftung für Schäden aus der Verletzung des Lebens, des Körpers oder der Gesundheit bleibt unberührt.</p>`
         };
 
         function showLegal(type) {
