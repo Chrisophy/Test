@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tauschbörse - DEMO VERSION</title>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 20px; background: #f4f4f4; color: #333; text-align: center; }
+        .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: left; }
+        .logo-container { margin-bottom: 0px; }
+h2 { margin-top: 0px; font-weight: 900; }
+        .logo-img { max-width: 100%; height: auto; max-height: 80px; background: #eee; padding: 5px; border-radius: 5px; }
+        h2 { color: #1a237e; font-size: 28px; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid #1a237e; display: inline-block; padding-bottom: 5px; margin-bottom: 20px; }
+        
+        input, textarea, button { padding: 12px; margin: 8px 0; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; font-size: 16px; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .contact-btn-inner { background: #28a745; margin-top: 10px; display: block; text-decoration: none; color: white; padding: 12px; border-radius: 4px; text-align: center; font-weight: bold; }
+        .edit-btn { background: #6c757d; margin-top: 10px; flex: 1; }
+        .delete-btn { background: #ff9800; margin-top: 10px; flex: 1; }
+        .logout-btn { background: #dc3545; padding: 8px; font-size: 14px; width: auto; margin-left: 10px; }
+        .hidden { display: none !important; }
+        .warning-box { background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; margin-bottom: 15px; }
+        .demo-badge { background: #ffeb3b; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; vertical-align: middle; }
+        .item-img { width: 100%; border-radius: 5px; margin: 10px 0; max-height: 250px; object-fit: cover; background: #eee; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; box-sizing: border-box; }
+        .modal-content { background: white; width: 100%; max-width: 500px; padding: 25px; border-radius: 12px; max-height: 90vh; overflow-y: auto; text-align: left; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .close-x { position: absolute; right: 15px; top: 10px; font-size: 32px; cursor: pointer; color: #999; line-height: 1; padding: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="logo-container">
+        <a href="https://www.wegweiser-betreuungsdienst.de/" target="_blank">
+            <img src="./logo.png" alt="Logo" class="logo-img">
+        </a>
+    </div>
+
+    <h2>Tauschbörse <span class="demo-badge">DEMO</span></h2>
+
+    <div id="login-area" class="card">
+        <div id="auth-login">
+            <h3>Anmelden <small style="font-weight: normal; font-size: 12px;">(Demo: Beliebige Daten nutzen)</small></h3>
+            <input type="email" id="email" placeholder="E-Mail" value="test@beispiel.de">
+            <input type="password" id="pass" placeholder="Passwort" value="passwort123">
+            <button onclick="login()">Anmelden</button>
+            <p><a onclick="toggleAuth('register')" style="cursor:pointer; color:#007bff">Neues Konto erstellen</a></p>
+        </div>
+
+        <div id="auth-register" class="hidden">
+            <h3>Registrieren</h3>
+            <input type="text" id="reg-user" placeholder="Nutzername">
+            <input type="email" id="reg-email" placeholder="E-Mail">
+            <input type="password" id="reg-pass" placeholder="Passwort (min. 8 Zeichen)">
+            <input type="password" id="reg-pass-confirm" placeholder="Wiederholen">
+            <button onclick="register()" style="background:#28a745">Konto erstellen</button>
+            <p><a onclick="toggleAuth('login')" style="cursor:pointer; color:#007bff">Zurück zum Login</a></p>
+        </div>
+    </div>
+
+    <div id="main-area" class="hidden">
+        <div id="verification-warning" class="warning-box hidden">
+            ⚠️ <b>Warten auf Freischaltung</b><br>
+            Demo-Modus: Du kannst trotzdem alles testen.
+        </div>
+
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Eingeloggt als: <b id="username-display">...</b></span>
+            <button onclick="logout()" class="logout-btn">Abmelden</button>
+        </div>
+
+        <button id="show-form-btn" onclick="openForm()">+ Neuen Artikel einstellen</button>
+        
+        <div id="artikel-liste" style="margin-top: 20px;">
+            </div>
+    </div>
+
+    <div id="modal-container" class="modal-overlay hidden" onclick="if(event.target.id==='modal-container')closeForm()">
+        <div class="modal-content">
+            <span class="close-x" onclick="closeForm()">&times;</span>
+            <h3 id="form-title" style="margin-top: 0;">Neuer Artikel</h3>
+            <input type="hidden" id="edit-id">
+            <input type="text" id="title" placeholder="Was bietest du an?">
+            <input type="text" id="standort" placeholder="Standort (z.B. Stadtteil)">
+            <textarea id="beschreibung" placeholder="Beschreibung" rows="4"></textarea>
+            <p id="img-note" style="font-size: 11px; color: #666; margin: 0;">Foto auswählen:</p>
+            <input type="file" id="foto" accept="image/*">
+            <button onclick="artikelSpeichern()" id="save-btn" style="background:#28a745; margin-top: 15px;">Speichern</button>
+            <button onclick="closeForm()" style="background:#6c757d">Abbrechen</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = JSON.parse(localStorage.getItem('demo_user')) || null;
+        let artikel = JSON.parse(localStorage.getItem('demo_artikel')) || [
+            {
+                id: '1',
+                title: 'Kinderwagen gut erhalten',
+                standort: 'Innenstadt',
+                beschreibung: 'Wir verschenken unseren alten Kinderwagen. Er ist noch voll funktionsfähig, hat aber ein paar Gebrauchsspuren.',
+                username: 'Maria S.',
+                email: 'maria@beispiel.de',
+                created: new Date().toISOString(),
+                foto: 'https://images.unsplash.com/photo-1591084728795-1149f32d9866?w=400'
+            },
+            {
+                id: '2',
+                title: 'Suche Hilfe im Garten',
+                standort: 'Nordstadt',
+                beschreibung: 'Suche jemanden, der mir im Frühling beim Rasenmähen hilft. Biete dafür hausgemachte Marmelade!',
+                username: 'Hans G.',
+                email: 'hans@beispiel.de',
+                created: new Date().toISOString(),
+                foto: 'https://images.unsplash.com/photo-1592150621344-82839b6fc236?w=400'
+            }
+        ];
+
+        
+
+        function toggleAuth(mode) {
+            document.getElementById('auth-login').classList.toggle('hidden', mode === 'register');
+            document.getElementById('auth-register').classList.toggle('hidden', mode === 'login');
+        }
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const user = email.split('@')[0]; 
+            currentUser = { id: 'user_' + Date.now(), username: user, email: email, verified: true };
+            localStorage.setItem('demo_user', JSON.stringify(currentUser));
+            checkAuth();
+        }
+
+        function register() {
+            const user = document.getElementById('reg-user').value;
+            const email = document.getElementById('reg-email').value;
+            currentUser = { id: 'user_' + Date.now(), username: user, email: email, verified: false };
+            localStorage.setItem('demo_user', JSON.stringify(currentUser));
+            checkAuth();
+        }
+
+        function logout() {
+            localStorage.removeItem('demo_user');
+            currentUser = null;
+            checkAuth();
+        }
+
+        function checkAuth() {
+            if (currentUser) {
+                document.getElementById('login-area').classList.add('hidden');
+                document.getElementById('main-area').classList.remove('hidden');
+                document.getElementById('username-display').innerText = currentUser.username;
+                ladeArtikel();
+            } else {
+                document.getElementById('login-area').classList.remove('hidden');
+                document.getElementById('main-area').classList.add('hidden');
+            }
+        }
+
+        function openForm(editId = null) {
+            document.getElementById('modal-container').classList.remove('hidden');
+            if (editId) {
+                const item = artikel.find(a => a.id === editId);
+                document.getElementById('form-title').innerText = "Artikel bearbeiten";
+                document.getElementById('edit-id').value = item.id;
+                document.getElementById('title').value = item.title;
+                document.getElementById('standort').value = item.standort;
+                document.getElementById('beschreibung').value = item.beschreibung;
+            } else {
+                document.getElementById('form-title').innerText = "Neuer Artikel";
+                document.getElementById('edit-id').value = "";
+                document.getElementById('title').value = "";
+                document.getElementById('standort').value = "";
+                document.getElementById('beschreibung').value = "";
+            }
+        }
+
+        function closeForm() {
+            document.getElementById('modal-container').classList.add('hidden');
+        }
+
+        function artikelSpeichern() {
+            const title = document.getElementById('title').value;
+            const standort = document.getElementById('standort').value;
+            const beschreibung = document.getElementById('beschreibung').value;
+            const editId = document.getElementById('edit-id').value;
+            const fileInput = document.getElementById('foto');
+
+            if(!title) return alert("Bitte Titel angeben");
+
+            const saveAction = (imageData) => {
+                if (editId) {
+                    const index = artikel.findIndex(a => a.id === editId);
+                    artikel[index] = { ...artikel[index], title, standort, beschreibung };
+                    if(imageData) artikel[index].foto = imageData;
+                } else {
+                    const neu = {
+                        id: 'art_' + Date.now(),
+                        title, standort, beschreibung,
+                        username: currentUser.username,
+                        email: currentUser.email,
+                        created: new Date().toISOString(),
+                        foto: imageData || 'https://via.placeholder.com/400x250?text=Kein+Bild'
+                    };
+                    artikel.unshift(neu);
+                }
+                localStorage.setItem('demo_artikel', JSON.stringify(artikel));
+                closeForm();
+                ladeArtikel();
+            };
+
+            if (fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => saveAction(e.target.result);
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveAction(null);
+            }
+        }
+
+        function loescheArtikel(id) {
+            if (confirm("Wirklich löschen?")) {
+                artikel = artikel.filter(a => a.id !== id);
+                localStorage.setItem('demo_artikel', JSON.stringify(artikel));
+                ladeArtikel();
+            }
+        }
+
+        function ladeArtikel() {
+            const liste = document.getElementById('artikel-liste');
+            liste.innerHTML = artikel.map(item => {
+                const isMyItem = currentUser && item.email === currentUser.email;
+                const dateStr = new Date(item.created).toLocaleDateString('de-DE');
+
+                return `
+                    <div class="card">
+                        <img src="${item.foto}" class="item-img" onerror="this.src='https://via.placeholder.com/400x250?text=Bild+nicht+verf%C3%BCgbar'">
+                        <h4>${item.title}</h4>
+                        <p>${item.beschreibung}</p>
+                        <div style="font-size: 13px; color: #666; border-top: 1px solid #eee; padding-top: 8px; margin-top: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Von: <b>${item.username}</b></span>
+                                <span>🕒 ${dateStr}</span>
+                            </div>
+                            📍 Ort: <b>${item.standort || 'Nicht angegeben'}</b>
+                        </div>
+                        
+                        ${isMyItem ? `
+                            <div style="display:flex; gap:10px">
+                                <button class="edit-btn" onclick="openForm('${item.id}')">✏️ Bearbeiten</button>
+                                <button class="delete-btn" onclick="loescheArtikel('${item.id}')">🗑️ Löschen</button>
+                            </div>
+                        ` : `
+                            <a href="mailto:${item.email}?subject=Interesse an: ${item.title}" class="contact-btn-inner">📧 Kontaktieren</a>
+                        `}
+                    </div>`;
+            }).join('');
+        }
+
+        
+        checkAuth();
+    </script>
+</body>
+</html>
